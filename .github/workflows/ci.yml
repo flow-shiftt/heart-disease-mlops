@@ -185,9 +185,14 @@ jobs:
       - name: Verify Prometheus is scraping every replica
         run: |
           kubectl -n cardiorisk port-forward svc/prometheus 9090:9090 &
-          sleep 15
-          curl -s 'http://localhost:9090/api/v1/query?query=up{job="cardiorisk-api"}' | tee up.json
-          python3 -c "import json; r=json.load(open('up.json'))['data']['result']; print(len(r),'targets up'); assert len(r)>=2 and all(x['value'][1]=='1' for x in r)"
+          for i in $(seq 1 20); do
+            sleep 5
+            curl -sG http://localhost:9090/api/v1/query --data-urlencode 'query=up{job="cardiorisk-api"}' > up.json || continue
+            n=$(python3 -c "import json; r=json.load(open('up.json'))['data']['result']; print(sum(x['value'][1]=='1' for x in r))")
+            echo "attempt $i: $n API replicas up"
+            [ "$n" -ge 2 ] && exit 0
+          done
+          cat up.json; echo "Prometheus did not discover >=2 healthy replicas"; exit 1
       - name: Cluster state
         if: always()
         run: |

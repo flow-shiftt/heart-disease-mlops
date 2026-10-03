@@ -1,8 +1,8 @@
 {
   "model_name": "logistic_regression",
-  "model_version": "1.0.0+202610030812",
-  "trained_at": "2026-10-03T08:12:16+00:00",
-  "mlflow_run_id": "f9da1d75e5ac4e689d8bac8953ef9092",
+  "model_version": "1.0.0+202610030813",
+  "trained_at": "2026-10-03T08:13:47+00:00",
+  "mlflow_run_id": "fc38f359ec314337bc39783077393b26",
   "data_sha256": "45dea08aeed198fdf36389ecb8d75486d5f23bdc4c2b39473999cec6ee3d6d36",
   "features": [
     "age",

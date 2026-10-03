@@ -53,7 +53,7 @@ def center(name, side):
 def main():
     fig, ax = plt.subplots(figsize=(16.5, 9))
     ax.set_xlim(0, 16.4)
-    ax.set_ylim(1.8, 9.6)
+    ax.set_ylim(1.85, 9.6)
     ax.axis("off")
     for title, y, color in LANES:
         ax.add_patch(FancyBboxPatch((0.1, y - 0.25), 16.2, 2.15, boxstyle="round,pad=0.02,rounding_size=0.15",
@@ -69,16 +69,15 @@ def main():
     # cross-lane flows
     for (a, sa), (b, sb), label in [
         (("pkg", "b"), ("arts", "t"), "model artefact"),
-        (("arts", "b"), ("logs", "t"), ""),
         (("build", "b"), ("pods", "t"), "image cardiorisk-api:1.0.0"),
     ]:
         p, q = center(a, sa), center(b, sb)
         ax.add_patch(FancyArrowPatch(p, q, arrowstyle="-|>", mutation_scale=13, color="#c0392b", lw=1.4, ls="--"))
         if label:
             ax.text((p[0] + q[0]) / 2 + 0.1, (p[1] + q[1]) / 2, label, fontsize=8, color="#c0392b")
-    ax.add_patch(FancyArrowPatch(center("pods", "b"), (15.2, 2.55), connectionstyle="arc3,rad=0.25",
+    ax.add_patch(FancyArrowPatch(center("pods", "b"), center("logs", "b"), connectionstyle="arc3,rad=0.12",
                                  arrowstyle="-|>", mutation_scale=12, color="#16a085", lw=1.2))
-    ax.text(10.5, 2.0, "structured request/prediction logs", fontsize=8, color="#16a085")
+    ax.text(9.0, 2.2, "structured request/prediction logs", fontsize=8, color="#16a085")
     ax.set_title("CardioRisk — end-to-end MLOps architecture", fontsize=14, weight="bold")
     OUT.parent.mkdir(exist_ok=True)
     fig.tight_layout()
