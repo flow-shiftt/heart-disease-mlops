@@ -41,7 +41,7 @@ def class_balance(df: pd.DataFrame, out_dir: Path) -> Path:
     counts = df[config.TARGET].map(LABELS).value_counts()
     fig, ax = plt.subplots(figsize=(5, 3.5))
     bars = ax.bar(counts.index, counts.values, color=[PALETTE[0], PALETTE[1]])
-    for bar, n in zip(bars, counts.values):
+    for bar, n in zip(bars, counts.values, strict=False):
         ax.annotate(f"{n} ({n / counts.sum():.0%})", (bar.get_x() + bar.get_width() / 2, n),
                     ha="center", va="bottom")
     ax.set_title("Class balance")
@@ -52,7 +52,7 @@ def class_balance(df: pd.DataFrame, out_dir: Path) -> Path:
 def numeric_histograms(df: pd.DataFrame, out_dir: Path) -> Path:
     cols = ["age", "trestbps", "chol", "thalach", "oldpeak", "ca"]
     fig, axes = plt.subplots(2, 3, figsize=(12, 6.5))
-    for ax, col in zip(axes.ravel(), cols):
+    for ax, col in zip(axes.ravel(), cols, strict=False):
         for cls in (0, 1):
             ax.hist(df.loc[df[config.TARGET] == cls, col].dropna(), bins=18, alpha=0.6,
                     color=PALETTE[cls], label=LABELS[cls])
@@ -76,9 +76,9 @@ def categorical_rates(df: pd.DataFrame, out_dir: Path) -> Path:
     cols = ["cp", "thal", "slope", "exang", "sex", "restecg"]
     names = {**CATEGORY_NAMES, "exang": {0: "no", 1: "yes"}, "sex": {0: "female", 1: "male"}}
     fig, axes = plt.subplots(2, 3, figsize=(13, 7))
-    for ax, col in zip(axes.ravel(), cols):
+    for ax, col in zip(axes.ravel(), cols, strict=False):
         rate = df.groupby(col)[config.TARGET].agg(["mean", "size"])
-        labels = [f"{names[col].get(int(i), i)}\n(n={n})" for i, n in zip(rate.index, rate["size"])]
+        labels = [f"{names[col].get(int(i), i)}\n(n={n})" for i, n in zip(rate.index, rate["size"], strict=False)]
         ax.bar(labels, rate["mean"], color="#c0392b")
         ax.axhline(df[config.TARGET].mean(), ls="--", c="grey", lw=1)
         ax.set_ylim(0, 1)

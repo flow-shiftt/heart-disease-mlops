@@ -42,7 +42,7 @@ def classification_metrics(y_true, y_pred, y_proba) -> dict[str, float]:
 
 def plot_roc(model, X, y, path: Path, title: str) -> Path:
     fig, ax = plt.subplots(figsize=(5, 5))
-    RocCurveDisplay.from_estimator(model, X, y, ax=ax, color="#c0392b")
+    RocCurveDisplay.from_estimator(model, X, y, ax=ax, curve_kwargs={"color": "#c0392b"})
     ax.plot([0, 1], [0, 1], ls="--", c="grey", lw=1)
     ax.set_title(title)
     return _save(fig, path)
@@ -50,7 +50,7 @@ def plot_roc(model, X, y, path: Path, title: str) -> Path:
 
 def plot_pr(model, X, y, path: Path, title: str) -> Path:
     fig, ax = plt.subplots(figsize=(5, 5))
-    PrecisionRecallDisplay.from_estimator(model, X, y, ax=ax, color="#2c3e50")
+    PrecisionRecallDisplay.from_estimator(model, X, y, ax=ax, curve_kwargs={"color": "#2c3e50"})
     ax.set_title(title)
     return _save(fig, path)
 

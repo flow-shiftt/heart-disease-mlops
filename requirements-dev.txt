@@ -1,8 +1,8 @@
 -r requirements.txt
-pytest
-pytest-cov
-httpx
-ruff
-nbformat
-nbconvert
-ipykernel
+pytest==9.1.1
+pytest-cov==7.1.0
+httpx==0.28.1
+ruff==0.16.10
+nbformat==5.11.1
+nbconvert==7.17.1
+ipykernel==7.4.0

@@ -1,11 +1,13 @@
-pandas
-numpy
-scikit-learn
-matplotlib
-seaborn
-joblib
-mlflow
-fastapi
-uvicorn[standard]
-pydantic
-prometheus-client
+# Pinned for reproducibility (resolved and tested 2026-10-03).
+pandas==3.0.6
+numpy==2.5.3
+scikit-learn==1.9.1
+scipy==1.18.1
+matplotlib==3.11.2
+seaborn==0.13.2
+joblib==1.6.0
+mlflow==3.16.1
+fastapi==0.142.2
+uvicorn[standard]==0.54.0
+pydantic==2.13.5
+prometheus-client==0.26.0

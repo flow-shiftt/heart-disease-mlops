@@ -1,0 +1,53 @@
+{
+  "model_name": "logistic_regression",
+  "model_version": "1.0.0+202610030812",
+  "trained_at": "2026-10-03T08:12:16+00:00",
+  "mlflow_run_id": "f9da1d75e5ac4e689d8bac8953ef9092",
+  "data_sha256": "45dea08aeed198fdf36389ecb8d75486d5f23bdc4c2b39473999cec6ee3d6d36",
+  "features": [
+    "age",
+    "trestbps",
+    "chol",
+    "thalach",
+    "oldpeak",
+    "ca",
+    "sex",
+    "fbs",
+    "exang",
+    "cp",
+    "restecg",
+    "slope",
+    "thal"
+  ],
+  "engineered_features": [
+    "hr_reserve_pct",
+    "bp_chol_load"
+  ],
+  "decision_threshold": 0.5,
+  "best_params": {
+    "C": 1.0,
+    "class_weight": "balanced",
+    "l1_ratio": 0.0
+  },
+  "cv_metrics": {
+    "cv_accuracy_mean": 0.8308,
+    "cv_precision_mean": 0.8367,
+    "cv_recall_mean": 0.7925,
+    "cv_f1_mean": 0.8108,
+    "cv_roc_auc_mean": 0.9072,
+    "cv_accuracy_std": 0.0292,
+    "cv_precision_std": 0.0547,
+    "cv_recall_std": 0.0624,
+    "cv_f1_std": 0.0327,
+    "cv_roc_auc_std": 0.0154
+  },
+  "test_metrics": {
+    "test_accuracy": 0.8689,
+    "test_precision": 0.8125,
+    "test_recall": 0.9286,
+    "test_f1": 0.8667,
+    "test_roc_auc": 0.9578
+  },
+  "python": "3.14.6",
+  "sklearn": "1.9.1"
+}

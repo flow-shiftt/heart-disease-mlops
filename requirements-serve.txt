@@ -1,10 +1,11 @@
-# Runtime-only dependencies for the serving container.
-# scikit-learn/numpy/pandas MUST match requirements.txt so the pickled pipeline loads.
-pandas
-numpy
-scikit-learn
-joblib
-fastapi
-uvicorn[standard]
-pydantic
-prometheus-client
+# Runtime-only dependencies for the serving container (no MLflow / plotting).
+# numpy / pandas / scikit-learn / joblib MUST match requirements.txt so the saved pipeline loads.
+pandas==3.0.6
+numpy==2.5.3
+scikit-learn==1.9.1
+scipy==1.18.1
+joblib==1.6.0
+fastapi==0.142.2
+uvicorn[standard]==0.54.0
+pydantic==2.13.5
+prometheus-client==0.26.0

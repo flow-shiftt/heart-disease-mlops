@@ -16,7 +16,7 @@ import json
 import logging
 import platform
 import tempfile
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 from pathlib import Path
 
 import joblib
@@ -45,6 +45,14 @@ from cardiorisk.features import build_pipeline, transformed_feature_names
 
 log = logging.getLogger(__name__)
 
+# MLflow >=3 serialises sklearn models with skops, which refuses unknown classes.
+# We explicitly allow-list our own transformer instead of falling back to pickle.
+SKOPS_TRUSTED = [
+    "cardiorisk.features.ClinicalFeatureBuilder",
+    "numpy.dtype",
+    "sklearn.tree._tree.Tree",  # files are produced by this pipeline, not third parties
+]
+
 
 def candidate_models(quick: bool = False) -> dict[str, tuple[object, dict]]:
     """Model families and their search spaces.
@@ -58,7 +66,8 @@ def candidate_models(quick: bool = False) -> dict[str, tuple[object, dict]]:
             LogisticRegression(solver="liblinear", max_iter=2000, random_state=rs),
             {
                 "model__C": [0.01, 0.1, 0.3, 1.0, 3.0],
-                "model__penalty": ["l1", "l2"],
+                # sklearn>=1.8: penalty is expressed via l1_ratio (0 = ridge/L2, 1 = lasso/L1)
+                "model__l1_ratio": [0.0, 1.0],
                 "model__class_weight": [None, "balanced"],
             },
         ),
@@ -82,9 +91,7 @@ def candidate_models(quick: bool = False) -> dict[str, tuple[object, dict]]:
         ),
     }
     if quick:
-        spaces = {
-            name: (est, {k: v[:1] for k, v in grid.items()}) for name, (est, grid) in spaces.items()
-        }
+        spaces = {name: (est, {k: v[:1] for k, v in grid.items()}) for name, (est, grid) in spaces.items()}
     return spaces
 
 
@@ -117,7 +124,7 @@ def train(quick: bool = False, register: bool = True) -> dict:
 
     mlflow.set_tracking_uri(config.MLFLOW_TRACKING_URI)
     mlflow.set_experiment(config.MLFLOW_EXPERIMENT)
-    stamp = datetime.now(timezone.utc).strftime("%Y%m%d-%H%M%S")
+    stamp = datetime.now(UTC).strftime("%Y%m%d-%H%M%S")
     data_hash = sha256(config.CLEAN_FILE)
 
     results: dict[str, dict] = {}
@@ -180,15 +187,26 @@ def train(quick: bool = False, register: bool = True) -> dict:
 
                 signature = infer_signature(X_train, best.predict_proba(X_train))
                 mlflow.sklearn.log_model(
-                    best, name="model", signature=signature, input_example=X_train.head(3)
+                    best,
+                    name="model",
+                    signature=signature,
+                    input_example=X_train.head(3),
+                    skops_trusted_types=SKOPS_TRUSTED,
                 )
 
-            results[name] = {"best_params": _short(search.best_params_), **cv_metrics,
-                             **{f"test_{k}": v for k, v in test_metrics.items()}}
+            results[name] = {
+                "best_params": _short(search.best_params_),
+                **cv_metrics,
+                **{f"test_{k}": v for k, v in test_metrics.items()},
+            }
             fitted[name] = best
-            log.info("%s: CV ROC-AUC %.3f ± %.3f | test ROC-AUC %.3f", name,
-                     cv_metrics["cv_roc_auc_mean"], cv_metrics["cv_roc_auc_std"],
-                     test_metrics["roc_auc"])
+            log.info(
+                "%s: CV ROC-AUC %.3f ± %.3f | test ROC-AUC %.3f",
+                name,
+                cv_metrics["cv_roc_auc_mean"],
+                cv_metrics["cv_roc_auc_std"],
+                test_metrics["roc_auc"],
+            )
 
         summary = pd.DataFrame(results).T
         # Selection rule: highest mean CV ROC-AUC. The hold-out set is reported but
@@ -210,8 +228,7 @@ def train(quick: bool = False, register: bool = True) -> dict:
         mlflow.log_metric("winner_cv_roc_auc", float(summary.loc[winner, "cv_roc_auc_mean"]))
         mlflow.log_metric("winner_test_roc_auc", float(summary.loc[winner, "test_roc_auc"]))
 
-        metadata = _package(final_model, winner, results[winner], X_train, data_hash,
-                            parent.info.run_id)
+        metadata = _package(final_model, winner, results[winner], X_train, data_hash, parent.info.run_id)
         mlflow.log_artifact(str(config.MODELS_DIR / "metadata.json"), artifact_path="package")
 
         if register:
@@ -221,6 +238,7 @@ def train(quick: bool = False, register: bool = True) -> dict:
                 name="final_model",
                 signature=signature,
                 input_example=X_train.head(3),
+                skops_trusted_types=SKOPS_TRUSTED,
                 registered_model_name=config.REGISTERED_MODEL_NAME,
             )
 
@@ -234,8 +252,7 @@ def _grid_iter(grid: dict):
     return ParameterGrid(grid)
 
 
-def _package(model, name: str, result: dict, X_train: pd.DataFrame, data_hash: str,
-             run_id: str) -> dict:
+def _package(model, name: str, result: dict, X_train: pd.DataFrame, data_hash: str, run_id: str) -> dict:
     """Persist the winning pipeline as joblib + MLflow model + metadata.json."""
     config.MODELS_DIR.mkdir(parents=True, exist_ok=True)
     joblib.dump(model, config.MODELS_DIR / "model.joblib")
@@ -246,15 +263,17 @@ def _package(model, name: str, result: dict, X_train: pd.DataFrame, data_hash: s
 
         shutil.rmtree(mlflow_dir)
     mlflow.sklearn.save_model(
-        model, str(mlflow_dir),
+        model,
+        str(mlflow_dir),
         signature=infer_signature(X_train, model.predict_proba(X_train)),
         input_example=X_train.head(3),
+        skops_trusted_types=SKOPS_TRUSTED,
     )
 
     metadata = {
         "model_name": name,
-        "model_version": f"{__version__}+{datetime.now(timezone.utc):%Y%m%d%H%M}",
-        "trained_at": datetime.now(timezone.utc).isoformat(timespec="seconds"),
+        "model_version": f"{__version__}+{datetime.now(UTC):%Y%m%d%H%M}",
+        "trained_at": datetime.now(UTC).isoformat(timespec="seconds"),
         "mlflow_run_id": run_id,
         "data_sha256": data_hash,
         "features": config.INPUT_FEATURES,
@@ -277,8 +296,16 @@ def main() -> None:
     args = parser.parse_args()
     logging.basicConfig(level=logging.INFO, format="%(asctime)s %(levelname)s %(name)s: %(message)s")
     out = train(quick=args.quick, register=not args.no_register)
-    print(json.dumps({"winner": out["winner"], "test_metrics": out["metadata"]["test_metrics"],
-                      "cv_metrics": out["metadata"]["cv_metrics"]}, indent=2))
+    print(
+        json.dumps(
+            {
+                "winner": out["winner"],
+                "test_metrics": out["metadata"]["test_metrics"],
+                "cv_metrics": out["metadata"]["cv_metrics"],
+            },
+            indent=2,
+        )
+    )
 
 
 if __name__ == "__main__":
