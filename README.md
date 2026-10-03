@@ -1,6 +1,6 @@
 # CardioRisk — Heart-Disease Risk Prediction with an End-to-End MLOps Pipeline
 
-**Course:** Machine Learning Operations (AIMLCZG523) — Assignment 1 · **Student:** Gaurisha Mathur
+**Course:** Machine Learning Operations (AIMLCZG523) — Assignment 1 · **Student:** Gaurisha Mathur (2025ae05642)
 **Repository:** https://github.com/flow-shiftt/heart-disease-mlops
 **Report:** [`docs/MLOps_Assignment1_Report.docx`](docs/MLOps_Assignment1_Report.docx) (PDF copy alongside) · **Evidence:** [`screenshots/`](screenshots), [`docs/logs/`](docs/logs)
 
