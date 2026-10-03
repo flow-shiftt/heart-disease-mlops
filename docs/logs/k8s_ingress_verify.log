@@ -1,0 +1,9 @@
+$ kubectl -n cardiorisk get ingress cardiorisk-api
+NAME             CLASS   HOSTS              ADDRESS        PORTS   AGE
+cardiorisk-api   nginx   cardiorisk.local   192.168.49.2   80      52s
+
+$ kubectl -n ingress-nginx port-forward svc/ingress-nginx-controller 8081:80 &
+$ curl -s -H 'Host: cardiorisk.local' http://127.0.0.1:8081/health
+{"status":"ok"}
+$ curl -s -H 'Host: cardiorisk.local' -X POST http://127.0.0.1:8081/predict -H 'content-type: application/json' -d @sample_request.json
+{"prediction":1,"label":"disease","confidence":0.9969,"probability_disease":0.9969,"risk_band":"high","model_name":"logistic_regression","model_version":"1.0.0+202610030813","request_id":"c98b3e8bd8d94df2b3961d1896101e10"}

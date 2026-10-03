@@ -1,0 +1,26 @@
+$ docker ps
+CONTAINER ID   IMAGE                  COMMAND                  CREATED                  STATUS                                     PORTS                                         NAMES
+305a7fc2b05a   cardiorisk-api:1.0.0   "uvicorn cardiorisk.…"   Less than a second ago   Up Less than a second (health: starting)   0.0.0.0:8000->8000/tcp, [::]:8000->8000/tcp   cardiorisk-api
+
+$ bash scripts/smoke_test.sh http://localhost:8000
+== waiting for http://localhost:8000/ready
+== GET /health
+{"status":"ok"}
+== POST /predict (high-risk sample)
+{"prediction":1,"label":"disease","confidence":0.9969,"probability_disease":0.9969,"risk_band":"high","model_name":"logistic_regression","model_version":"1.0.0+202610030813","request_id":"fee4d8a495c3"}
+== POST /predict (invalid payload must be rejected with 422)
+422 OK
+== GET /metrics (excerpt)
+cardiorisk_predictions_total{label="disease",risk_band="high"} 1.0
+cardiorisk_model_info{name="logistic_regression",version="1.0.0+202610030813"} 1.0
+SMOKE TEST PASSED
+
+$ docker logs cardiorisk-api
+INFO:     Application startup complete.
+{"ts": "2026-10-03T08:21:57.074+00:00", "level": "INFO", "logger": "cardiorisk.api", "msg": "model_loaded", "model_name": "logistic_regression", "model_version": "1.0.0+202610030813"}
+INFO:     Uvicorn running on http://0.0.0.0:8000 (Press CTRL+C to quit)
+{"ts": "2026-10-03T08:21:58.006+00:00", "level": "INFO", "logger": "cardiorisk.api", "msg": "request", "request_id": "02842923bb24", "method": "GET", "route": "/ready", "status": 200, "latency_ms": 1.62, "client": "172.17.0.1"}
+{"ts": "2026-10-03T08:21:58.019+00:00", "level": "INFO", "logger": "cardiorisk.api", "msg": "request", "request_id": "105810dbaf65", "method": "GET", "route": "/health", "status": 200, "latency_ms": 0.44, "client": "172.17.0.1"}
+{"ts": "2026-10-03T08:21:58.042+00:00", "level": "INFO", "logger": "cardiorisk.api", "msg": "prediction", "request_id": "fee4d8a495c3", "label": "disease", "probability_disease": 0.9969, "risk_band": "high", "model_version": "1.0.0+202610030813"}
+{"ts": "2026-10-03T08:21:58.042+00:00", "level": "INFO", "logger": "cardiorisk.api", "msg": "request", "request_id": "fee4d8a495c3", "method": "POST", "route": "/predict", "status": 200, "latency_ms": 13.91, "client": "172.17.0.1"}
+{"ts": "2026-10-03T08:21:58.057+00:00", "level": "INFO", "logger": "cardiorisk.api", "msg": "request", "request_id": "bdf599a35c46", "method": "POST", "route": "/predict", "status": 422, "latency_ms": 0.41, "client": "172.17.0.1"}

@@ -1,0 +1,168 @@
+DEPRECATED: The legacy builder is deprecated and will be removed in a future release.
+            Install the buildx component to build images with BuildKit:
+            https://docs.docker.com/go/buildx/
+
+Sending build context to Docker daemon  73.73kB
+Step 1/12 : FROM python:3.12-slim
+3.12-slim: Pulling from library/python
+bd36565c0fde: Pulling fs layer
+bd52add1124e: Pulling fs layer
+aadd712613b6: Pulling fs layer
+50a64a4cd155: Pulling fs layer
+aadd712613b6: Download complete
+bd52add1124e: Download complete
+50a64a4cd155: Download complete
+bd36565c0fde: Download complete
+cc723a2096e1: Download complete
+95af96c7be1a: Download complete
+bd36565c0fde: Pull complete
+bd52add1124e: Pull complete
+aadd712613b6: Pull complete
+50a64a4cd155: Pull complete
+Digest: sha256:dddfd7e07f9d15aeeca61529320492139d21cac7f0070c00609243e51e4e0016
+Status: Downloaded newer image for python:3.12-slim
+ ---> dddfd7e07f9d
+Step 2/12 : ENV PYTHONDONTWRITEBYTECODE=1     PYTHONUNBUFFERED=1     PIP_NO_CACHE_DIR=1     PIP_DISABLE_PIP_VERSION_CHECK=1     PYTHONPATH=/app/src     MODEL_DIR=/app/models
+ ---> Running in e93fe804b100
+ ---> Removed intermediate container e93fe804b100
+ ---> 7ce933d5ea13
+Step 3/12 : WORKDIR /app
+ ---> Running in 5156f8263281
+ ---> Removed intermediate container 5156f8263281
+ ---> cb682728fc18
+Step 4/12 : COPY requirements-serve.txt .
+ ---> 80033ed3f109
+Step 5/12 : RUN pip install -r requirements-serve.txt
+ ---> Running in 3444c4b03a58
+Collecting pandas==3.0.6 (from -r requirements-serve.txt (line 3))
+  Downloading pandas-3.0.6-cp312-cp312-manylinux_2_24_aarch64.manylinux_2_28_aarch64.whl.metadata (79 kB)
+Collecting numpy==2.5.3 (from -r requirements-serve.txt (line 4))
+  Downloading numpy-2.5.3-cp312-cp312-manylinux_2_27_aarch64.manylinux_2_28_aarch64.whl.metadata (6.6 kB)
+Collecting scikit-learn==1.9.1 (from -r requirements-serve.txt (line 5))
+  Downloading scikit_learn-1.9.1-cp312-cp312-manylinux_2_27_aarch64.manylinux_2_28_aarch64.whl.metadata (9.3 kB)
+Collecting scipy==1.18.1 (from -r requirements-serve.txt (line 6))
+  Downloading scipy-1.18.1-cp312-cp312-manylinux_2_27_aarch64.manylinux_2_28_aarch64.whl.metadata (62 kB)
+Collecting joblib==1.6.0 (from -r requirements-serve.txt (line 7))
+  Downloading joblib-1.6.0-py3-none-any.whl.metadata (6.5 kB)
+Collecting fastapi==0.142.2 (from -r requirements-serve.txt (line 8))
+  Downloading fastapi-0.142.2-py3-none-any.whl.metadata (27 kB)
+Collecting uvicorn==0.54.0 (from uvicorn[standard]==0.54.0->-r requirements-serve.txt (line 9))
+  Downloading uvicorn-0.54.0-py3-none-any.whl.metadata (6.6 kB)
+Collecting pydantic==2.13.5 (from -r requirements-serve.txt (line 10))
+  Downloading pydantic-2.13.5-py3-none-any.whl.metadata (110 kB)
+Collecting prometheus-client==0.26.0 (from -r requirements-serve.txt (line 11))
+  Downloading prometheus_client-0.26.0-py3-none-any.whl.metadata (2.1 kB)
+Collecting python-dateutil>=2.8.2 (from pandas==3.0.6->-r requirements-serve.txt (line 3))
+  Downloading python_dateutil-2.9.0.post0-py2.py3-none-any.whl.metadata (8.4 kB)
+Collecting narwhals>=2.0.1 (from scikit-learn==1.9.1->-r requirements-serve.txt (line 5))
+  Downloading narwhals-2.26.0-py3-none-any.whl.metadata (15 kB)
+Collecting threadpoolctl>=3.5.0 (from scikit-learn==1.9.1->-r requirements-serve.txt (line 5))
+  Downloading threadpoolctl-3.7.0-py3-none-any.whl.metadata (24 kB)
+Collecting cloudpickle>=3.0 (from joblib==1.6.0->-r requirements-serve.txt (line 7))
+  Downloading cloudpickle-3.1.2-py3-none-any.whl.metadata (7.1 kB)
+Collecting starlette>=0.46.0 (from fastapi==0.142.2->-r requirements-serve.txt (line 8))
+  Downloading starlette-1.7.0-py3-none-any.whl.metadata (6.6 kB)
+Collecting typing-extensions>=4.8.0 (from fastapi==0.142.2->-r requirements-serve.txt (line 8))
+  Downloading typing_extensions-4.16.0-py3-none-any.whl.metadata (3.3 kB)
+Collecting typing-inspection>=0.4.2 (from fastapi==0.142.2->-r requirements-serve.txt (line 8))
+  Downloading typing_inspection-0.4.4-py3-none-any.whl.metadata (2.6 kB)
+Collecting annotated-doc>=0.0.2 (from fastapi==0.142.2->-r requirements-serve.txt (line 8))
+  Downloading annotated_doc-0.0.5-py3-none-any.whl.metadata (6.5 kB)
+Collecting opentelemetry-api>=1.44.0 (from fastapi==0.142.2->-r requirements-serve.txt (line 8))
+  Downloading opentelemetry_api-1.45.0-py3-none-any.whl.metadata (1.4 kB)
+Collecting click>=7.0 (from uvicorn==0.54.0->uvicorn[standard]==0.54.0->-r requirements-serve.txt (line 9))
+  Downloading click-8.5.0-py3-none-any.whl.metadata (2.6 kB)
+Collecting h11>=0.8 (from uvicorn==0.54.0->uvicorn[standard]==0.54.0->-r requirements-serve.txt (line 9))
+  Downloading h11-0.16.0-py3-none-any.whl.metadata (8.3 kB)
+Collecting annotated-types>=0.6.0 (from pydantic==2.13.5->-r requirements-serve.txt (line 10))
+  Downloading annotated_types-0.8.0-py3-none-any.whl.metadata (15 kB)
+Collecting pydantic-core==2.46.5 (from pydantic==2.13.5->-r requirements-serve.txt (line 10))
+  Downloading pydantic_core-2.46.5-cp312-cp312-manylinux_2_17_aarch64.manylinux2014_aarch64.whl.metadata (6.6 kB)
+Collecting httptools>=0.8.0 (from uvicorn[standard]==0.54.0->-r requirements-serve.txt (line 9))
+  Downloading httptools-0.8.0-cp312-cp312-manylinux2014_aarch64.manylinux_2_17_aarch64.manylinux_2_28_aarch64.whl.metadata (3.5 kB)
+Collecting python-dotenv>=0.13 (from uvicorn[standard]==0.54.0->-r requirements-serve.txt (line 9))
+  Downloading python_dotenv-1.2.4-py3-none-any.whl.metadata (29 kB)
+Collecting pyyaml>=5.1 (from uvicorn[standard]==0.54.0->-r requirements-serve.txt (line 9))
+  Downloading pyyaml-6.0.3-cp312-cp312-manylinux2014_aarch64.manylinux_2_17_aarch64.manylinux_2_28_aarch64.whl.metadata (2.4 kB)
+Collecting uvloop>=0.15.1 (from uvicorn[standard]==0.54.0->-r requirements-serve.txt (line 9))
+  Downloading uvloop-0.23.0-cp312-cp312-manylinux2014_aarch64.manylinux_2_17_aarch64.manylinux_2_28_aarch64.whl.metadata (5.1 kB)
+Collecting watchfiles>=0.20 (from uvicorn[standard]==0.54.0->-r requirements-serve.txt (line 9))
+  Downloading watchfiles-1.3.0-cp310-abi3-manylinux_2_17_aarch64.manylinux2014_aarch64.whl.metadata (4.9 kB)
+Collecting websockets>=13.0 (from uvicorn[standard]==0.54.0->-r requirements-serve.txt (line 9))
+  Downloading websockets-17.1-cp312-cp312-manylinux2014_aarch64.manylinux_2_17_aarch64.manylinux_2_28_aarch64.whl.metadata (6.3 kB)
+Collecting six>=1.5 (from python-dateutil>=2.8.2->pandas==3.0.6->-r requirements-serve.txt (line 3))
+  Downloading six-1.17.0-py2.py3-none-any.whl.metadata (1.7 kB)
+Collecting anyio<5,>=4.0.0 (from starlette>=0.46.0->fastapi==0.142.2->-r requirements-serve.txt (line 8))
+  Downloading anyio-4.15.1-py3-none-any.whl.metadata (4.7 kB)
+Collecting idna>=2.8 (from anyio<5,>=4.0.0->starlette>=0.46.0->fastapi==0.142.2->-r requirements-serve.txt (line 8))
+  Downloading idna-3.20-py3-none-any.whl.metadata (7.2 kB)
+Downloading pandas-3.0.6-cp312-cp312-manylinux_2_24_aarch64.manylinux_2_28_aarch64.whl (10.3 MB)
+   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 10.3/10.3 MB 23.7 MB/s eta 0:00:00
+Downloading numpy-2.5.3-cp312-cp312-manylinux_2_27_aarch64.manylinux_2_28_aarch64.whl (15.7 MB)
+   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 15.7/15.7 MB 21.8 MB/s eta 0:00:00
+Downloading scikit_learn-1.9.1-cp312-cp312-manylinux_2_27_aarch64.manylinux_2_28_aarch64.whl (8.9 MB)
+   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 8.9/8.9 MB 26.9 MB/s eta 0:00:00
+Downloading scipy-1.18.1-cp312-cp312-manylinux_2_27_aarch64.manylinux_2_28_aarch64.whl (34.0 MB)
+   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 34.0/34.0 MB 26.0 MB/s eta 0:00:00
+Downloading joblib-1.6.0-py3-none-any.whl (306 kB)
+Downloading fastapi-0.142.2-py3-none-any.whl (144 kB)
+Downloading uvicorn-0.54.0-py3-none-any.whl (87 kB)
+Downloading pydantic-2.13.5-py3-none-any.whl (472 kB)
+Downloading prometheus_client-0.26.0-py3-none-any.whl (64 kB)
+Downloading pydantic_core-2.46.5-cp312-cp312-manylinux_2_17_aarch64.manylinux2014_aarch64.whl (2.0 MB)
+   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 2.0/2.0 MB 23.2 MB/s eta 0:00:00
+Downloading annotated_doc-0.0.5-py3-none-any.whl (5.3 kB)
+Downloading annotated_types-0.8.0-py3-none-any.whl (13 kB)
+Downloading click-8.5.0-py3-none-any.whl (125 kB)
+Downloading cloudpickle-3.1.2-py3-none-any.whl (22 kB)
+Downloading h11-0.16.0-py3-none-any.whl (37 kB)
+Downloading httptools-0.8.0-cp312-cp312-manylinux2014_aarch64.manylinux_2_17_aarch64.manylinux_2_28_aarch64.whl (518 kB)
+Downloading narwhals-2.26.0-py3-none-any.whl (474 kB)
+Downloading opentelemetry_api-1.45.0-py3-none-any.whl (60 kB)
+Downloading python_dateutil-2.9.0.post0-py2.py3-none-any.whl (229 kB)
+Downloading python_dotenv-1.2.4-py3-none-any.whl (23 kB)
+Downloading pyyaml-6.0.3-cp312-cp312-manylinux2014_aarch64.manylinux_2_17_aarch64.manylinux_2_28_aarch64.whl (775 kB)
+   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 775.1/775.1 kB 28.2 MB/s eta 0:00:00
+Downloading starlette-1.7.0-py3-none-any.whl (78 kB)
+Downloading threadpoolctl-3.7.0-py3-none-any.whl (26 kB)
+Downloading typing_extensions-4.16.0-py3-none-any.whl (45 kB)
+Downloading typing_inspection-0.4.4-py3-none-any.whl (14 kB)
+Downloading uvloop-0.23.0-cp312-cp312-manylinux2014_aarch64.manylinux_2_17_aarch64.manylinux_2_28_aarch64.whl (4.4 MB)
+   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 4.4/4.4 MB 20.1 MB/s eta 0:00:00
+Downloading watchfiles-1.3.0-cp310-abi3-manylinux_2_17_aarch64.manylinux2014_aarch64.whl (454 kB)
+Downloading websockets-17.1-cp312-cp312-manylinux2014_aarch64.manylinux_2_17_aarch64.manylinux_2_28_aarch64.whl (225 kB)
+Downloading anyio-4.15.1-py3-none-any.whl (132 kB)
+Downloading six-1.17.0-py2.py3-none-any.whl (11 kB)
+Downloading idna-3.20-py3-none-any.whl (69 kB)
+Installing collected packages: websockets, uvloop, typing-extensions, threadpoolctl, six, pyyaml, python-dotenv, prometheus-client, numpy, narwhals, idna, httptools, h11, cloudpickle, click, annotated-types, annotated-doc, uvicorn, typing-inspection, scipy, python-dateutil, pydantic-core, opentelemetry-api, joblib, anyio, watchfiles, starlette, scikit-learn, pydantic, pandas, fastapi
+Successfully installed annotated-doc-0.0.5 annotated-types-0.8.0 anyio-4.15.1 click-8.5.0 cloudpickle-3.1.2 fastapi-0.142.2 h11-0.16.0 httptools-0.8.0 idna-3.20 joblib-1.6.0 narwhals-2.26.0 numpy-2.5.3 opentelemetry-api-1.45.0 pandas-3.0.6 prometheus-client-0.26.0 pydantic-2.13.5 pydantic-core-2.46.5 python-dateutil-2.9.0.post0 python-dotenv-1.2.4 pyyaml-6.0.3 scikit-learn-1.9.1 scipy-1.18.1 six-1.17.0 starlette-1.7.0 threadpoolctl-3.7.0 typing-extensions-4.16.0 typing-inspection-0.4.4 uvicorn-0.54.0 uvloop-0.23.0 watchfiles-1.3.0 websockets-17.1
+[91mWARNING: Running pip as the 'root' user can result in broken permissions and conflicting behaviour with the system package manager, possibly rendering your system unusable. It is recommended to use a virtual environment instead: https://pip.pypa.io/warnings/venv. Use the --root-user-action option if you know what you are doing and want to suppress this warning.
+[0m ---> Removed intermediate container 3444c4b03a58
+ ---> eb32deb238e1
+Step 6/12 : COPY src/ src/
+ ---> feb292612724
+Step 7/12 : COPY models/model.joblib models/metadata.json models/
+ ---> 6c52fed80ec2
+Step 8/12 : RUN useradd --uid 10001 --no-create-home --shell /usr/sbin/nologin cardio
+ ---> Running in a7cfa8231918
+ ---> Removed intermediate container a7cfa8231918
+ ---> fbe68bc4167e
+Step 9/12 : USER 10001
+ ---> Running in f141f80f3bfb
+ ---> Removed intermediate container f141f80f3bfb
+ ---> 8e5528258966
+Step 10/12 : EXPOSE 8000
+ ---> Running in 89495ba3581c
+ ---> Removed intermediate container 89495ba3581c
+ ---> 1326d585ca66
+Step 11/12 : HEALTHCHECK --interval=15s --timeout=3s --start-period=10s --retries=3   CMD python -c "import urllib.request; urllib.request.urlopen('http://127.0.0.1:8000/health', timeout=2)"
+ ---> Running in d4c4d94dba0e
+ ---> Removed intermediate container d4c4d94dba0e
+ ---> 9982d94dc51c
+Step 12/12 : CMD ["uvicorn", "cardiorisk.api.app:app", "--host", "0.0.0.0", "--port", "8000", "--no-access-log"]
+ ---> Running in def2ffda8ebd
+ ---> Removed intermediate container def2ffda8ebd
+ ---> e04bcd9b414e
+Successfully built e04bcd9b414e
+Successfully tagged cardiorisk-api:1.0.0
+docker build -t cardiorisk-api:1.0.0 .  0.02s user 0.03s system 0% cpu 39.659 total

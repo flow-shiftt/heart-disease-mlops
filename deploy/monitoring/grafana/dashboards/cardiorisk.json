@@ -1,96 +1,398 @@
 {
   "uid": "cardiorisk-api",
   "title": "CardioRisk API – Service & Model Health",
-  "tags": ["cardiorisk", "mlops"],
+  "tags": [
+    "cardiorisk",
+    "mlops"
+  ],
   "timezone": "browser",
   "schemaVersion": 39,
   "version": 1,
   "refresh": "5s",
-  "time": {"from": "now-15m", "to": "now"},
+  "time": {
+    "from": "now-15m",
+    "to": "now"
+  },
   "panels": [
     {
-      "id": 1, "type": "stat", "title": "Requests / sec",
-      "gridPos": {"x": 0, "y": 0, "w": 6, "h": 4},
-      "datasource": {"type": "prometheus", "uid": "prom"},
-      "targets": [{"refId": "A", "expr": "sum(rate(cardiorisk_http_requests_total[1m]))"}],
-      "fieldConfig": {"defaults": {"unit": "reqps", "decimals": 2}, "overrides": []}
-    },
-    {
-      "id": 2, "type": "stat", "title": "Error rate (non-2xx)",
-      "gridPos": {"x": 6, "y": 0, "w": 6, "h": 4},
-      "datasource": {"type": "prometheus", "uid": "prom"},
-      "targets": [{"refId": "A", "expr": "sum(rate(cardiorisk_http_requests_total{status!~\"2..\"}[5m])) / clamp_min(sum(rate(cardiorisk_http_requests_total[5m])), 1e-9)"}],
-      "fieldConfig": {"defaults": {"unit": "percentunit", "decimals": 1,
-        "thresholds": {"mode": "absolute", "steps": [{"color": "green", "value": null}, {"color": "orange", "value": 0.05}, {"color": "red", "value": 0.2}]}}, "overrides": []}
-    },
-    {
-      "id": 3, "type": "stat", "title": "p95 latency /predict",
-      "gridPos": {"x": 12, "y": 0, "w": 6, "h": 4},
-      "datasource": {"type": "prometheus", "uid": "prom"},
-      "targets": [{"refId": "A", "expr": "histogram_quantile(0.95, sum by (le) (rate(cardiorisk_http_request_duration_seconds_bucket{route=\"/predict\"}[5m])))"}],
-      "fieldConfig": {"defaults": {"unit": "s", "decimals": 3}, "overrides": []}
-    },
-    {
-      "id": 4, "type": "stat", "title": "Total predictions served",
-      "gridPos": {"x": 18, "y": 0, "w": 6, "h": 4},
-      "datasource": {"type": "prometheus", "uid": "prom"},
-      "targets": [{"refId": "A", "expr": "sum(cardiorisk_predictions_total)"}],
-      "fieldConfig": {"defaults": {"unit": "short"}, "overrides": []}
-    },
-    {
-      "id": 5, "type": "timeseries", "title": "Request rate by route & status",
-      "gridPos": {"x": 0, "y": 4, "w": 12, "h": 8},
-      "datasource": {"type": "prometheus", "uid": "prom"},
-      "targets": [{"refId": "A", "expr": "sum by (route, status) (rate(cardiorisk_http_requests_total[1m]))", "legendFormat": "{{route}} {{status}}"}],
-      "fieldConfig": {"defaults": {"unit": "reqps"}, "overrides": []}
-    },
-    {
-      "id": 6, "type": "timeseries", "title": "Latency quantiles (/predict)",
-      "gridPos": {"x": 12, "y": 4, "w": 12, "h": 8},
-      "datasource": {"type": "prometheus", "uid": "prom"},
+      "id": 1,
+      "type": "stat",
+      "title": "Requests / sec",
+      "gridPos": {
+        "x": 0,
+        "y": 0,
+        "w": 6,
+        "h": 4
+      },
+      "datasource": {
+        "type": "prometheus",
+        "uid": "prom"
+      },
       "targets": [
-        {"refId": "A", "expr": "histogram_quantile(0.50, sum by (le) (rate(cardiorisk_http_request_duration_seconds_bucket{route=\"/predict\"}[1m])))", "legendFormat": "p50"},
-        {"refId": "B", "expr": "histogram_quantile(0.95, sum by (le) (rate(cardiorisk_http_request_duration_seconds_bucket{route=\"/predict\"}[1m])))", "legendFormat": "p95"},
-        {"refId": "C", "expr": "histogram_quantile(0.99, sum by (le) (rate(cardiorisk_http_request_duration_seconds_bucket{route=\"/predict\"}[1m])))", "legendFormat": "p99"}
+        {
+          "refId": "A",
+          "expr": "sum(rate(cardiorisk_http_requests_total[1m]))"
+        }
       ],
-      "fieldConfig": {"defaults": {"unit": "s"}, "overrides": []}
+      "fieldConfig": {
+        "defaults": {
+          "unit": "reqps",
+          "decimals": 2
+        },
+        "overrides": []
+      }
     },
     {
-      "id": 7, "type": "piechart", "title": "Predictions by risk band",
-      "gridPos": {"x": 0, "y": 12, "w": 8, "h": 8},
-      "datasource": {"type": "prometheus", "uid": "prom"},
-      "targets": [{"refId": "A", "expr": "sum by (risk_band) (cardiorisk_predictions_total)", "legendFormat": "{{risk_band}}", "instant": true}],
-      "options": {"pieType": "donut", "legend": {"displayMode": "table", "placement": "right", "values": ["value", "percent"]}, "reduceOptions": {"calcs": ["lastNotNull"]}}
+      "id": 2,
+      "type": "stat",
+      "title": "Error rate (non-2xx)",
+      "gridPos": {
+        "x": 6,
+        "y": 0,
+        "w": 6,
+        "h": 4
+      },
+      "datasource": {
+        "type": "prometheus",
+        "uid": "prom"
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "expr": "sum(rate(cardiorisk_http_requests_total{status!~\"2..\"}[5m])) / clamp_min(sum(rate(cardiorisk_http_requests_total[5m])), 1e-9)"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "percentunit",
+          "decimals": 1,
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "orange",
+                "value": 0.05
+              },
+              {
+                "color": "red",
+                "value": 0.2
+              }
+            ]
+          }
+        },
+        "overrides": []
+      }
     },
     {
-      "id": 8, "type": "bargauge", "title": "Predicted probability distribution (drift watch)",
+      "id": 3,
+      "type": "stat",
+      "title": "p95 latency /predict",
+      "gridPos": {
+        "x": 12,
+        "y": 0,
+        "w": 6,
+        "h": 4
+      },
+      "datasource": {
+        "type": "prometheus",
+        "uid": "prom"
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "expr": "histogram_quantile(0.95, sum by (le) (rate(cardiorisk_http_request_duration_seconds_bucket{route=\"/predict\"}[5m])))"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "s",
+          "decimals": 3
+        },
+        "overrides": []
+      }
+    },
+    {
+      "id": 4,
+      "type": "stat",
+      "title": "Total predictions served",
+      "gridPos": {
+        "x": 18,
+        "y": 0,
+        "w": 6,
+        "h": 4
+      },
+      "datasource": {
+        "type": "prometheus",
+        "uid": "prom"
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "expr": "sum(cardiorisk_predictions_total)"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "short"
+        },
+        "overrides": []
+      }
+    },
+    {
+      "id": 5,
+      "type": "timeseries",
+      "title": "Request rate by route & status",
+      "gridPos": {
+        "x": 0,
+        "y": 4,
+        "w": 12,
+        "h": 8
+      },
+      "datasource": {
+        "type": "prometheus",
+        "uid": "prom"
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "expr": "sum by (route, status) (rate(cardiorisk_http_requests_total[1m]))",
+          "legendFormat": "{{route}} {{status}}"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "reqps"
+        },
+        "overrides": []
+      }
+    },
+    {
+      "id": 6,
+      "type": "timeseries",
+      "title": "Latency quantiles (/predict)",
+      "gridPos": {
+        "x": 12,
+        "y": 4,
+        "w": 12,
+        "h": 8
+      },
+      "datasource": {
+        "type": "prometheus",
+        "uid": "prom"
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "expr": "histogram_quantile(0.50, sum by (le) (rate(cardiorisk_http_request_duration_seconds_bucket{route=\"/predict\"}[1m])))",
+          "legendFormat": "p50"
+        },
+        {
+          "refId": "B",
+          "expr": "histogram_quantile(0.95, sum by (le) (rate(cardiorisk_http_request_duration_seconds_bucket{route=\"/predict\"}[1m])))",
+          "legendFormat": "p95"
+        },
+        {
+          "refId": "C",
+          "expr": "histogram_quantile(0.99, sum by (le) (rate(cardiorisk_http_request_duration_seconds_bucket{route=\"/predict\"}[1m])))",
+          "legendFormat": "p99"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "s"
+        },
+        "overrides": []
+      }
+    },
+    {
+      "id": 7,
+      "type": "piechart",
+      "title": "Predictions by risk band",
+      "gridPos": {
+        "x": 0,
+        "y": 12,
+        "w": 8,
+        "h": 8
+      },
+      "datasource": {
+        "type": "prometheus",
+        "uid": "prom"
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "expr": "sum by (risk_band) (cardiorisk_predictions_total)",
+          "legendFormat": "{{risk_band}}",
+          "instant": true
+        }
+      ],
+      "options": {
+        "pieType": "donut",
+        "legend": {
+          "displayMode": "table",
+          "placement": "right",
+          "values": [
+            "value",
+            "percent"
+          ]
+        },
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ]
+        }
+      }
+    },
+    {
+      "id": 8,
+      "type": "bargauge",
+      "title": "Predicted probability distribution (drift watch)",
       "description": "Share of predictions per probability bucket. A sustained shift against the training baseline suggests input drift.",
-      "gridPos": {"x": 8, "y": 12, "w": 8, "h": 8},
-      "datasource": {"type": "prometheus", "uid": "prom"},
-      "targets": [{"refId": "A", "expr": "sum by (le) (cardiorisk_prediction_probability_bucket)", "legendFormat": "≤ {{le}}", "instant": true, "format": "heatmap"}],
-      "options": {"orientation": "horizontal", "displayMode": "gradient", "reduceOptions": {"calcs": ["lastNotNull"]}},
-      "fieldConfig": {"defaults": {"unit": "short", "color": {"mode": "continuous-BlYlRd"}}, "overrides": []}
+      "gridPos": {
+        "x": 8,
+        "y": 12,
+        "w": 8,
+        "h": 8
+      },
+      "datasource": {
+        "type": "prometheus",
+        "uid": "prom"
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "expr": "sum by (le) (cardiorisk_prediction_probability_bucket)",
+          "legendFormat": "≤ {{le}}",
+          "instant": true,
+          "format": "heatmap"
+        }
+      ],
+      "options": {
+        "orientation": "horizontal",
+        "displayMode": "gradient",
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ]
+        }
+      },
+      "fieldConfig": {
+        "defaults": {
+          "unit": "short",
+          "color": {
+            "mode": "continuous-BlYlRd"
+          }
+        },
+        "overrides": []
+      }
     },
     {
-      "id": 9, "type": "timeseries", "title": "Disease vs no-disease predictions / min",
-      "gridPos": {"x": 16, "y": 12, "w": 8, "h": 8},
-      "datasource": {"type": "prometheus", "uid": "prom"},
-      "targets": [{"refId": "A", "expr": "sum by (label) (rate(cardiorisk_predictions_total[1m])) * 60", "legendFormat": "{{label}}"}],
-      "fieldConfig": {"defaults": {"unit": "short"}, "overrides": []}
+      "id": 9,
+      "type": "timeseries",
+      "title": "Disease vs no-disease predictions / min",
+      "gridPos": {
+        "x": 16,
+        "y": 12,
+        "w": 8,
+        "h": 8
+      },
+      "datasource": {
+        "type": "prometheus",
+        "uid": "prom"
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "expr": "sum by (label) (rate(cardiorisk_predictions_total[1m])) * 60",
+          "legendFormat": "{{label}}"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "short"
+        },
+        "overrides": []
+      }
     },
     {
-      "id": 10, "type": "table", "title": "Rejected payloads by field (422)",
-      "gridPos": {"x": 0, "y": 20, "w": 12, "h": 6},
-      "datasource": {"type": "prometheus", "uid": "prom"},
-      "targets": [{"refId": "A", "expr": "sum by (field) (cardiorisk_validation_errors_total)", "instant": true, "format": "table"}],
-      "transformations": [{"id": "organize", "options": {"excludeByName": {"Time": true}}}]
+      "id": 10,
+      "type": "table",
+      "title": "Rejected payloads by field (422)",
+      "gridPos": {
+        "x": 0,
+        "y": 20,
+        "w": 12,
+        "h": 9
+      },
+      "datasource": {
+        "type": "prometheus",
+        "uid": "prom"
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "expr": "sum by (field) (cardiorisk_validation_errors_total)",
+          "instant": true,
+          "format": "table"
+        }
+      ],
+      "transformations": [
+        {
+          "id": "organize",
+          "options": {
+            "excludeByName": {
+              "Time": true
+            }
+          }
+        }
+      ],
+      "options": {
+        "sortBy": [
+          {
+            "displayName": "Value",
+            "desc": true
+          }
+        ]
+      }
     },
     {
-      "id": 11, "type": "table", "title": "Loaded model",
-      "gridPos": {"x": 12, "y": 20, "w": 12, "h": 6},
-      "datasource": {"type": "prometheus", "uid": "prom"},
-      "targets": [{"refId": "A", "expr": "cardiorisk_model_info", "instant": true, "format": "table"}],
-      "transformations": [{"id": "organize", "options": {"excludeByName": {"Time": true, "Value": true, "__name__": true}}}]
+      "id": 11,
+      "type": "table",
+      "title": "Loaded model",
+      "gridPos": {
+        "x": 12,
+        "y": 20,
+        "w": 12,
+        "h": 9
+      },
+      "datasource": {
+        "type": "prometheus",
+        "uid": "prom"
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "expr": "cardiorisk_model_info",
+          "instant": true,
+          "format": "table"
+        }
+      ],
+      "transformations": [
+        {
+          "id": "organize",
+          "options": {
+            "excludeByName": {
+              "Time": true,
+              "Value": true,
+              "__name__": true
+            }
+          }
+        }
+      ]
     }
   ]
 }

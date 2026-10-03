@@ -29,10 +29,10 @@ defaults:
 jobs:
   lint:
     name: Lint (ruff)
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-python@v5
+      - uses: actions/checkout@v7
+      - uses: actions/setup-python@v7
         with:
           python-version: ${{ env.PYTHON_VERSION }}
       - run: pip install ruff==0.16.10
@@ -42,10 +42,10 @@ jobs:
   test:
     name: Unit tests (pytest)
     needs: lint
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-python@v5
+      - uses: actions/checkout@v7
+      - uses: actions/setup-python@v7
         with:
           python-version: ${{ env.PYTHON_VERSION }}
           cache: pip
@@ -59,7 +59,7 @@ jobs:
                  --cov=cardiorisk --cov-report=term-missing --cov-report=xml:reports/coverage.xml
       - name: Upload test reports
         if: always()
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: test-reports
           path: |
@@ -69,10 +69,10 @@ jobs:
   train:
     name: Data + EDA + training (MLflow)
     needs: test
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-python@v5
+      - uses: actions/checkout@v7
+      - uses: actions/setup-python@v7
         with:
           python-version: ${{ env.PYTHON_VERSION }}
           cache: pip
@@ -105,20 +105,20 @@ jobs:
             python -c "import pandas as pd; print(pd.read_csv('reports/figures/model_comparison.csv', index_col=0).T.to_string())"
             echo '```'
           } >> "$GITHUB_STEP_SUMMARY"
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v7
         with:
           name: model
           path: |
             models/model.joblib
             models/metadata.json
             models/mlflow_model/
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v7
         with:
           name: mlflow-tracking
           path: |
             mlflow.db
             mlruns/
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v7
         with:
           name: eda-and-evaluation-figures
           path: reports/figures/
@@ -126,10 +126,10 @@ jobs:
   docker:
     name: Build image + container smoke test
     needs: train
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/download-artifact@v4
+      - uses: actions/checkout@v7
+      - uses: actions/download-artifact@v8
         with:
           name: model
           path: models
@@ -144,12 +144,12 @@ jobs:
         run: docker logs api 2>&1 | tee container.log
       - name: Save image
         run: docker save $IMAGE:1.0.0 | gzip > image.tar.gz
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v7
         with:
           name: docker-image
           path: image.tar.gz
           retention-days: 3
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v7
         if: always()
         with:
           name: container-logs
@@ -158,10 +158,10 @@ jobs:
   deploy:
     name: Deploy to Kubernetes (kind) + verify
     needs: docker
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/download-artifact@v4
+      - uses: actions/checkout@v7
+      - uses: actions/download-artifact@v8
         with:
           name: docker-image
       - uses: helm/kind-action@v1
@@ -201,7 +201,7 @@ jobs:
             echo; kubectl -n cardiorisk describe deploy/cardiorisk-api
             echo; kubectl -n cardiorisk logs -l app.kubernetes.io/name=cardiorisk-api --tail=50
           } | tee k8s-state.txt
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v7
         if: always()
         with:
           name: k8s-deployment-state

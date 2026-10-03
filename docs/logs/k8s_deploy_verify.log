@@ -1,0 +1,40 @@
+$ kubectl get nodes -o wide
+NAME       STATUS   ROLES           AGE     VERSION
+minikube   Ready    control-plane   2m24s   v1.37.0
+
+$ kubectl -n cardiorisk get deploy,pods,svc,ingress,hpa -o wide
+NAME                             READY   UP-TO-DATE   AVAILABLE   AGE
+deployment.apps/cardiorisk-api   2/2     2            2           109s
+deployment.apps/grafana          0/1     1            0           26s
+deployment.apps/prometheus       0/1     1            0           26s
+
+NAME                                  READY   STATUS              RESTARTS   AGE
+pod/cardiorisk-api-5466cf7f87-kfx4s   1/1     Running             0          109s
+pod/cardiorisk-api-5466cf7f87-wrz9m   1/1     Running             0          109s
+pod/grafana-78b8dcdbc7-lrh99          0/1     ContainerCreating   0          26s
+pod/prometheus-7585bd9d85-pt2zd       0/1     ContainerCreating   0          26s
+
+NAME                     TYPE           CLUSTER-IP      EXTERNAL-IP   PORT(S)        AGE
+service/cardiorisk-api   LoadBalancer   10.104.59.12    127.0.0.1     80:31428/TCP   109s
+service/grafana          ClusterIP      10.99.132.145   <none>        3000/TCP       27s
+service/prometheus       ClusterIP      10.100.172.83   <none>        9090/TCP       27s
+
+NAME                                       CLASS   HOSTS              ADDRESS   PORTS   AGE
+ingress.networking.k8s.io/cardiorisk-api   nginx   cardiorisk.local             80      34s
+
+NAME                                                 REFERENCE                   TARGETS              MINPODS   MAXPODS   REPLICAS   AGE
+horizontalpodautoscaler.autoscaling/cardiorisk-api   Deployment/cardiorisk-api   cpu: <unknown>/70%   2         5         2          109s
+
+$ minikube service cardiorisk-api -n cardiorisk --url   ->  http://127.0.0.1:59153
+
+$ bash scripts/smoke_test.sh http://127.0.0.1:59153
+== waiting for http://127.0.0.1:59153/ready
+== GET /health
+{"status":"ok"}
+== POST /predict (high-risk sample)
+{"prediction":1,"label":"disease","confidence":0.9969,"probability_disease":0.9969,"risk_band":"high","model_name":"logistic_regression","model_version":"1.0.0+202610030813","request_id":"3e6451389a7c"}
+== POST /predict (invalid payload must be rejected with 422)
+422 OK
+== GET /metrics (excerpt)
+cardiorisk_model_info{name="logistic_regression",version="1.0.0+202610030813"} 1.0
+SMOKE TEST PASSED
