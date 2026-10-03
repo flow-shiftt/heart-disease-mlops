@@ -1,0 +1,24 @@
+# In-cluster monitoring stack (apply after deploy/k8s):
+#   kubectl apply -k deploy/monitoring
+#   kubectl -n cardiorisk port-forward svc/grafana 3000:3000
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+namespace: cardiorisk
+resources:
+  - k8s/prometheus.yaml
+  - k8s/grafana.yaml
+generatorOptions:
+  disableNameSuffixHash: true
+configMapGenerator:
+  - name: prometheus-config
+    files:
+      - prometheus.yml=k8s/prometheus-k8s.yml
+  - name: grafana-datasources
+    files:
+      - prometheus.yml=grafana/provisioning/datasources/prometheus.yml
+  - name: grafana-dashboard-provider
+    files:
+      - provider.yml=grafana/provisioning/dashboards/provider.yml
+  - name: grafana-dashboards
+    files:
+      - cardiorisk.json=grafana/dashboards/cardiorisk.json

@@ -1,0 +1,10 @@
+# Runtime-only dependencies for the serving container.
+# scikit-learn/numpy/pandas MUST match requirements.txt so the pickled pipeline loads.
+pandas
+numpy
+scikit-learn
+joblib
+fastapi
+uvicorn[standard]
+pydantic
+prometheus-client

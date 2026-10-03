@@ -1,0 +1,22 @@
+# NGINX ingress (minikube: `minikube addons enable ingress`).
+# Reach it with:  curl -H 'Host: cardiorisk.local' http://$(minikube ip)/health
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: cardiorisk-api
+  namespace: cardiorisk
+  annotations:
+    nginx.ingress.kubernetes.io/proxy-body-size: 1m
+spec:
+  ingressClassName: nginx
+  rules:
+    - host: cardiorisk.local
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: cardiorisk-api
+                port:
+                  name: http

@@ -1,0 +1,8 @@
+-r requirements.txt
+pytest
+pytest-cov
+httpx
+ruff
+nbformat
+nbconvert
+ipykernel
