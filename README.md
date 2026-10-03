@@ -2,7 +2,7 @@
 
 **Course:** Machine Learning Operations (AIMLCZG523) — Assignment 1
 **Repository:** https://github.com/flow-shiftt/heart-disease-mlops
-**Report:** [`docs/MLOps_Assignment1_Report.docx`](docs/MLOps_Assignment1_Report.docx)
+**Report:** [`docs/MLOps_Assignment1_Report.docx`](docs/MLOps_Assignment1_Report.docx) (PDF copy alongside) · **Evidence:** [`screenshots/`](screenshots), [`docs/logs/`](docs/logs)
 
 CardioRisk predicts the presence of heart disease from 13 clinical measurements (UCI Heart Disease,
 Cleveland subset) and serves the model as a monitored, containerised REST API on Kubernetes.
